@@ -34,3 +34,18 @@ int main() {
   std::cout << "Done." << std::endl;
   return 0;
 }
+
+/*
+==================================================== 输出 ========================================================
+NoExplicit constructed with 10
+funcA used NoExplicit 
+NoExplicit constructed with 20
+funcA used NoExplicit 
+WithExplicit constructed with 300
+WithExplicit constructed with 400
+funcB used WithExplicit 
+funcB used WithExplicit 
+WithExplicit constructed with 500
+funcB used WithExplicit 
+Done.
+*/

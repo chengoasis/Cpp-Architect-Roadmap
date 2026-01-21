@@ -36,3 +36,15 @@ int main() {
   std::cout << "L-value: " << lvalue << " address is " << &lvalue << std::endl;
   return 0;
 }
+
+/*
+==================================================== 输出 ========================================================
+L-value: cheng address is 0x7ffca6f6bef0
+[左值处理] 处理变量:cheng
+左值引用: cheng address is 0x7ffca6f6bef0
+[右值处理] 处理临时对象/移动后的对象:rvalue
+右值引用: rvalue address is 0x7ffca6f6bf10
+[右值处理] 处理临时对象/移动后的对象:cheng
+右值引用: cheng address is 0x7ffca6f6bef0
+L-value: cheng address is 0x7ffca6f6bef0
+*/
