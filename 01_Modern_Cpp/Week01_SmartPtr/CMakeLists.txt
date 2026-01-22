@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # 项目名称
-Project(SmartPtrDemo)
+project(SmartPtrDemo)
 
 # 设置 C++ 标准为 C++ 20
 set(CMAKE_CXX_STANDARD 20)

@@ -1,79 +1,93 @@
 #ifndef CPP_ARCHITECT_ROADMAP_01_MODERN_CPP_WEEK01_SMART_PTR_SMART_PTR_H_
 #define CPP_ARCHITECT_ROADMAP_01_MODERN_CPP_WEEK01_SMART_PTR_SMART_PTR_H_
 
-#include <utility> // 用于 std::exchange (可选，这里我们手动实现以展示原理)
+#include <utility> // std::exchange 
 
 // Google Style: 类名使用 PascalCase
-template <typename T>
+template <typename T> 
 class SmartPtr {
- public:
-  // 构造函数：接管原始指针的所有权
-  // explicit 防止隐式类型转换 (例如 SmartPtr<int> p = 1;)
+public:
+  // ptr参数有默认值nullptr
   explicit SmartPtr(T* ptr = nullptr) : ptr_(ptr) {}
 
-  // 析构函数：负责释放资源
-  ~SmartPtr() {
+  ~SmartPtr() { 
     if (ptr_) {
       delete ptr_;
-      ptr_ = nullptr; // 最佳实践：释放后置空，避免悬空指针
+      ptr_ = nullptr;  // 防止悬垂指针
     }
   }
-  // --- 移动语义核心部分 (The Core of Move Semantics) ---
 
-  // 1. 移动构造函数 (Move Constructor)
-  // 目的：从一个临时对象(右值)那里"窃取"资源，而不是复制。
-  // 参数：SmartPtr&& other (右值引用)
-  // noexcept：承诺不抛出异常（对于放入 std::vector 非常重要）
-  SmartPtr(SmartPtr&& other) noexcept : ptr_(other.ptr_) {
-    // 关键步骤：将源指针置空！
-    // 否则，当 'other' 析构时，资源会被释放，导致我们也指向无效内存。
-    other.ptr_ = nullptr; 
+  T* Get() {
+    return ptr_;
   }
 
-  // 2. 移动赋值运算符 (Move Assignment Operator)
-  // 目的：支持 p1 = std::move(p2);
+  // ------------------------- Level 2: 运算符重载 -------------------------
+  // 1. 解引用运算符
+  // 返回 T& (引用)，允许用户直接操作对象本身
+  // const 修饰函数：表示调用这个函数不会修改 SmartPtr 自身的成员变量(ptr_)
+  T& operator*() const {
+    return *ptr_;
+  }
+
+  // 2. 箭头运算符
+  // 返回 T* (指针)，这是 C++ 编译器处理 -> 的硬性规定
+  // 它会让 basket->func() 自动转发为 ptr_->func()
+  T* operator->() const {
+    return ptr_;
+  }
+
+  // ------------------------- Level 3: 独占所有权 -------------------------
+  // --- unique_ptr 最核心的特性，也是它区别于普通指针的关键。----
+  // Q: 如果不能拷贝，那怎么把一个指针传递给别人呢？  -----> level 4
+
+  // 1. 禁用拷贝构造函数
+  //    禁止 SmartPtr<Ball> p2(p1);
+  SmartPtr(const SmartPtr&) = delete;
+
+  // 2. 禁用拷贝赋值运算符
+  //    禁止 p2 = p1;
+  SmartPtr& operator=(const SmartPtr&) = delete;
+
+  // ------------------------- Level 4: 转移所有权 -------------------------
+  // 1. 移动构造函数
+  // 目的：创建一个新对象，直接接管 other 的资源
+  // 注意：构造函数没有返回值！
+  // 构造函数不需要检查 self-assignment，因为新对象不可能等于旧对象
+  SmartPtr(SmartPtr&& other) noexcept {
+    // [偷窃]: 把别人的指针拿过来
+    ptr_ = other.ptr_;
+    // [销毁现场]: 把别人的指针置空，防止他析构时把球炸了
+    other.ptr_ = nullptr;
+    
+    // 构造函数结束，this 对象就诞生了
+  }
+
+  // 2. 移动赋值运算符
+  // 目的：this 已经存在了，现在要扔掉旧的，换个新的
+  // 注意：返回值是 SmartPtr& (引用)，支持链式赋值 (a = b = c)
   SmartPtr& operator=(SmartPtr&& other) noexcept {
-    // 步骤 A: 检测自赋值 (Self-assignment check)
-    // 如果是自己赋给自己 (p = std::move(p))，什么都不做
+    // [自赋值检测]: 如果是 p = std::move(p)，直接返回
     if (this == &other) {
       return *this;
     }
 
-    // 步骤 B: 释放当前持有的资源
-    // 因为我们要接管新资源，必须先清理旧的，否则会内存泄漏
+    // [清理门户]: 
+    // 如果我手里原本拿着球，我必须先把它销毁，否则就内存泄漏了。
     if (ptr_) {
-      delete ptr_;
+      delete ptr_;   // <---------- 会触发析构
     }
 
-    // 步骤 C: 窃取资源
+    // [偷窃]: 接管资源
     ptr_ = other.ptr_;
 
-    // 步骤 D: 将源指针置空 (打断原来的所有权)
+    // [销毁现场]: 把源对象置空
     other.ptr_ = nullptr;
 
-    // 返回当前对象的引用，支持链式调用
+    // 返回我自己 (*this)
     return *this;
   }
 
-  // --- 禁止拷贝 (RAII 独占所有权) ---
-
-  // 禁用拷贝构造
-  SmartPtr(const SmartPtr&) = delete;
-  // 禁用拷贝赋值
-  SmartPtr& operator=(const SmartPtr&) = delete;
-
-  // --- 常用操作符重载 ---
-
-  // 解引用操作符，允许像使用 *p 一样使用
-  T& operator*() const { return *ptr_; }
-
-  // 箭头操作符，允许像使用 p->method() 一样使用
-  T* operator->() const { return ptr_; }
-
-  // 获取原始指针 (Google Style: 函数名 PascalCase)
-  T* Get() const { return ptr_; }
-
- private:
+private:
   // Google Style: 成员变量以小写加下划线结尾
   T* ptr_;
 };
