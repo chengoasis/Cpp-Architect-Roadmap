@@ -77,13 +77,13 @@ int main() {
   */
   SmartPtr<Ball> ptr1(new Ball("Original"));
 
-  std::cout << "--- 移动前 ---" << std::endl;
+  std::cout << "--- 移动构造前 ---" << std::endl;
   // 打印盒子放在哪 (&)
   std::cout << "ptr1 住在: " << &ptr1 << std::endl; 
   // 打印盒子里装着啥 (Get) -> 应该有值
   std::cout << "ptr1 持有: " << ptr1.Get() << std::endl; 
 
-  std::cout << "--- 移动构造 ---" << std::endl;
+  std::cout << "--- 移动构造后 ---" << std::endl;
   SmartPtr<Ball> ptr2 = std::move(ptr1);
 
   // 打印盒子放在哪 (&) -> 地址肯定变了，这是个新变量
@@ -99,12 +99,17 @@ int main() {
   }
   ptr2->Bounce(); // ptr2 接管了 ptr1 的地址
   
-  std::cout << "--- 移动赋值 ---" << std::endl;
+  std::cout << "--- 移动赋值前 ---" << std::endl;
   SmartPtr<Ball> ptr3(new Ball("New Ball"));
+  std::cout << "ptr3 住在: " << &ptr3 << std::endl; 
+  std::cout << "ptr3 持有：" << ptr3.Get() << std::endl;
   // ptr3 原本指向 New Ball，现在接管 ptr2 (Original)
   // 出发了delete，所以会析构掉new Ball("New Ball")
-  ptr3 = std::move(ptr2);
 
+  std::cout << "--- 移动赋值后 ---" << std::endl;
+  ptr3 = std::move(ptr2);
+  std::cout << "ptr3 住在: " << &ptr3 << std::endl; 
+  std::cout << "ptr3 持有：" << ptr3.Get() << std::endl;
   // 预期：New Ball 被析构，ptr3 拿到 Original
   if (ptr2.Get() == nullptr) {
     std::cout << "ptr2 已经被掏空了,是nullptr" << std::endl;

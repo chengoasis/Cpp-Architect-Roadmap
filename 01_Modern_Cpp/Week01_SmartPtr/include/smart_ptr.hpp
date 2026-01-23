@@ -80,7 +80,7 @@ public:
     // [偷窃]: 接管资源
     ptr_ = other.ptr_;
 
-    // [销毁现场]: 把源对象置空
+    // [销毁现场]: 把源对象置空 ---- 解除绑定（已经移交给 this->ptr_ 了）
     other.ptr_ = nullptr;
 
     // 返回我自己 (*this)
