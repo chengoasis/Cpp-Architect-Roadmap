@@ -103,10 +103,10 @@ int main() {
   SmartPtr<Ball> ptr3(new Ball("New Ball"));
   std::cout << "ptr3 住在: " << &ptr3 << std::endl; 
   std::cout << "ptr3 持有：" << ptr3.Get() << std::endl;
-  // ptr3 原本指向 New Ball，现在接管 ptr2 (Original)
-  // 出发了delete，所以会析构掉new Ball("New Ball")
-
+  
   std::cout << "--- 移动赋值后 ---" << std::endl;
+  // ptr3 原本指向 New Ball，现在接管 ptr2 (Original)
+  // 触发了delete，所以会析构掉new Ball("New Ball")
   ptr3 = std::move(ptr2);
   std::cout << "ptr3 住在: " << &ptr3 << std::endl; 
   std::cout << "ptr3 持有：" << ptr3.Get() << std::endl;
