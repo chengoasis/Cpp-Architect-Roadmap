@@ -25,8 +25,10 @@ int main() {
     // Submit 接收一个 lambda 表达式作为任务
     pool.Submit([i] {
       // 获取当前线程的 ID
+      // std::this_thread::get_id()：这是 C++ 标准库函数。它返回当前正在跑这段代码的线程的唯一身份证号。
+      // 它返回的类型 不是 int，也不是 string，而是一个特殊的类型 std::thread::id。你不能直接把它和字符串相加。
       std::stringstream ss;
-      ss << std::this_thread::get_id();
+      ss << std::this_thread::get_id();   
       std::string thread_id = ss.str();
 
       // 模拟计算任务

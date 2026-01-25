@@ -9,6 +9,7 @@
 ### 1. 线程安全队列 (ThreadSafeQueue)
 * **位置**: `include/thread_safe_queue.hpp`
 * **问题**: 标准库 `std::queue` 非线程安全，多线程并发 `push/pop` 会导致数据竞争甚至 crash。
+* **核心**: **线程安全队列 = 普通队列 + 锁（保护） + 信号（通知）**
 * **解决方案**:
     * **互斥锁 (`std::mutex`)**: 保护队列所有操作的原子性。
     * **条件变量 (`std::condition_variable`)**: 实现“空时等待，有时唤醒”机制，杜绝 CPU 空转 (Busy Waiting)。
@@ -25,6 +26,11 @@
     * **Submit**: 生产者提交任务入队。
     * **Execute**: 空闲 Worker 被唤醒，取出任务执行。
     * **Shutdown**: 析构时发送 "Poison Pill" (空任务) 或设置标志，并调用 `join()` 等待所有线程优雅退出。
+
+<div align="center">
+  <img src="../../assets/thread_pool_architecture.jpg" width="800" alt="Thread Pool Architecture Diagram" />
+  <p><i>图：线程池架构与工作流全景图 (Thread Pool Architecture & Workflow)</i></p>
+</div>
 
 ## 📂 目录结构 (Directory Structure)
 

@@ -43,10 +43,10 @@ public:
   }
 
   // 辅助函数：判断是否为空 (要在锁里检查)
-  // Q:只是读一下状态，又不是修改数据，为什么要加锁？
-  // std::queue::empty() 底层通常是比较 begin_ptr == end_ptr。
-  // 如果不加锁：可能你在读取 begin_ptr 的瞬间，另一个线程正在修改 begin_ptr（比如正在 Pop）。
-  // 所以，即使是“看一眼”，在多线程环境下也必须先锁住，看一眼，再解锁。这就是为什么 Empty() 里面也要写 std::lock_guard。
+  // Q: 只是读一下状态，又不是修改数据，为什么要加锁？
+  // A: std::queue::empty() 底层通常是比较 begin_ptr == end_ptr。
+  //    如果不加锁：可能你在读取 begin_ptr 的瞬间，另一个线程正在修改 begin_ptr（比如正在 Pop）。
+  //    所以，即使是“看一眼”，在多线程环境下也必须先锁住，看一眼，再解锁。这就是为什么 Empty() 里面也要写 std::lock_guard。
   bool Empty() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return queue_.empty();
