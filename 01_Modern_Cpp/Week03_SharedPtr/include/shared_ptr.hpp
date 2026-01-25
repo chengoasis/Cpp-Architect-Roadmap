@@ -1,5 +1,5 @@
-#ifndef WEEK03_SHAREDPTR_INCLUDE_SHARED_PTR_HPP_
-#define WEEK03_SHAREDPTR_INCLUDE_SHARED_PTR_HPP_
+#ifndef Week03_SHAREDPTR_INCLUDE_SHARED_PTR_HPP_
+#define Week03_SHAREDPTR_INCLUDE_SHARED_PTR_HPP_
 
 template <typename T>
 class SharedPtr {
@@ -135,4 +135,4 @@ class SharedPtr {
   int* ref_count_; // The Control Block ------ 指向引用计数的指针 (int*)
 };
 
-#endif  // WEEK03_SHAREDPTR_INCLUDE_SHARED_PTR_HPP_
+#endif  // Week03_SHAREDPTR_INCLUDE_SHARED_PTR_HPP_

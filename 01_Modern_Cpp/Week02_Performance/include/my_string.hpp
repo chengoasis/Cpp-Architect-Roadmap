@@ -1,5 +1,5 @@
-#ifndef WEEK02_PERFORMANCE_INCLUDE_MY_STRING_HPP_
-#define WEEK02_PERFORMANCE_INCLUDE_MY_STRING_HPP_
+#ifndef Week02_PERFORMANCE_INCLUDE_MY_STRING_HPP_
+#define Week02_PERFORMANCE_INCLUDE_MY_STRING_HPP_
 
 #include <iostream>
 #include <cstring> // for strlen, strcpy
@@ -42,4 +42,4 @@ private:
   size_t length_; // 字符串长度 (不含 \0)
 };
 
-#endif // WEEK02_PERFORMANCE_INCLUDE_MY_STRING_HPP_
+#endif // Week02_PERFORMANCE_INCLUDE_MY_STRING_HPP_
