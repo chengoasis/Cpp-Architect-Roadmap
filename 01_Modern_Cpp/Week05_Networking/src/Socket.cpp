@@ -98,7 +98,7 @@ Socket Socket::Accept() {
   // sockfd: 监听套接字文件描述符
   // addr: 指向 sockaddr 结构的指针，用于接收客户端地址信息
   // addrlen: 输入输出参数，既是输入也是输出
-  int client_fd = ::accept(fd_, reinterpret_cast<struct sockaddr*>(&client_address), client_address_len);
+  int client_fd = ::accept(fd_, reinterpret_cast<struct sockaddr*>(&client_address), &client_address_len);
   if (client_fd < 0) {
     throw std::runtime_error("Failed to accept connection: " + 
                              std::string(strerror(errno)));
